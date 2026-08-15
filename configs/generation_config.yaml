@@ -1,0 +1,285 @@
+# Параметры генерации синтетических данных компаний
+
+seed: 42
+num_samples: 1000000
+
+# Вероятности отраслей
+industry_probs:
+  finance: 0.20
+  retail: 0.25
+  manufacturing: 0.20
+  healthcare: 0.10
+  it_telecom: 0.15
+  other: 0.10
+
+# Параметры лог-нормальных распределений для непрерывных признаков
+# mean и std задаются для логарифма
+log_normal_params:
+  revenue: {mean: 3.0, std: 1.8}
+  intangible_assets: {mean: 2.0, std: 2.0}
+  employees: {mean: 4.0, std: 1.2}
+  servers: {mean: 2.5, std: 1.5}
+  critical_apps: {mean: 1.5, std: 0.8}
+  iot_ot: {mean: 0.5, std: 1.2}
+  personal_data: {mean: 1.0, std: 2.0}
+  incidents_3y: {mean: 0.2, std: 0.8}
+  past_loss: {mean: 1.0, std: 1.5}
+  past_payout: {mean: 0.8, std: 1.5}
+  downtime_hour_loss: {mean: 1.0, std: 1.2}
+  mtd_hours: {mean: 2.0, std: 0.8}
+
+# Вероятности нулевых значений для некоторых признаков
+zero_probabilities:
+  iot_ot: 0.40
+  personal_data: 0.10
+  incidents_3y: 0.20
+  past_loss: 0.30
+  past_payout: 0.30
+
+# Параметры бета-распределений для долей (зависят от отрасли)
+beta_params:
+  online_share:
+    finance: {alpha: 2, beta: 3}
+    retail: {alpha: 4, beta: 2}
+    manufacturing: {alpha: 1, beta: 4}
+    healthcare: {alpha: 1.5, beta: 3}
+    it_telecom: {alpha: 5, beta: 2}
+    other: {alpha: 2, beta: 3}
+  cloud_share:
+    finance: {alpha: 3, beta: 2}
+    retail: {alpha: 2, beta: 3}
+    manufacturing: {alpha: 1, beta: 5}
+    healthcare: {alpha: 2, beta: 3}
+    it_telecom: {alpha: 5, beta: 2}
+    other: {alpha: 2, beta: 3}
+  training_percent:
+    finance: {alpha: 4, beta: 2}
+    retail: {alpha: 3, beta: 3}
+    manufacturing: {alpha: 2, beta: 4}
+    healthcare: {alpha: 3, beta: 3}
+    it_telecom: {alpha: 4, beta: 2}
+    other: {alpha: 2, beta: 3}
+
+# Вероятности для бинарных признаков (зависят от отрасли)
+binary_probs:
+  has_policy:
+    finance: 0.8
+    retail: 0.6
+    manufacturing: 0.5
+    healthcare: 0.7
+    it_telecom: 0.75
+    other: 0.4
+  has_soc_siem:
+    finance: 0.9
+    retail: 0.6
+    manufacturing: 0.4
+    healthcare: 0.7
+    it_telecom: 0.85
+    other: 0.3
+  has_irp:
+    finance: 0.85
+    retail: 0.6
+    manufacturing: 0.5
+    healthcare: 0.7
+    it_telecom: 0.8
+    other: 0.35
+  has_insurance:
+    finance: 0.7
+    retail: 0.5
+    manufacturing: 0.4
+    healthcare: 0.6
+    it_telecom: 0.65
+    other: 0.3
+  has_network_segmentation:
+    finance: 0.8
+    retail: 0.5
+    manufacturing: 0.4
+    healthcare: 0.6
+    it_telecom: 0.7
+    other: 0.3
+  has_eol_software:
+    finance: 0.2
+    retail: 0.3
+    manufacturing: 0.4
+    healthcare: 0.25
+    it_telecom: 0.15
+    other: 0.35
+
+# Периодичность пентеста (порядковый) - распределение по категориям
+pentest_probs:
+  finance: {0: 0.05, 6: 0.30, 12: 0.50, 24: 0.15}
+  retail: {0: 0.10, 6: 0.20, 12: 0.40, 24: 0.30}
+  manufacturing: {0: 0.15, 6: 0.15, 12: 0.35, 24: 0.35}
+  healthcare: {0: 0.10, 6: 0.20, 12: 0.40, 24: 0.30}
+  it_telecom: {0: 0.05, 6: 0.35, 12: 0.45, 24: 0.15}
+  other: {0: 0.20, 6: 0.15, 12: 0.30, 24: 0.35}
+
+# Корреляционная матрица для непрерывных признаков. Матрица должна быть
+# положительно определенной
+correlation_matrix:
+  revenue:
+    - 1.0
+    - 0.7
+    - 0.6
+    - 0.5
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.3
+    - 0.2
+    - 0.1
+  intangible_assets:
+    - 0.7
+    - 1.0
+    - 0.5
+    - 0.4
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - 0.15
+    - 0.1
+  employees:
+    - 0.6
+    - 0.5
+    - 1.0
+    - 0.7
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.3
+    - 0.2
+    - 0.1
+  servers:
+    - 0.5
+    - 0.4
+    - 0.7
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.4
+    - 0.25
+    - 0.1
+  critical_apps:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.2
+    - 0.1
+    - 0.0
+  iot_ot:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.1
+    - 0.05
+    - 0.0
+  personal_data:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.2
+    - 0.1
+    - 0.05
+  incidents_3y:
+    - 0.3
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.2
+    - 0.1
+    - 0.2
+    - 1.0
+    - 0.6
+    - 0.3
+  past_loss:
+    - 0.2
+    - 0.15
+    - 0.2
+    - 0.25
+    - 0.1
+    - 0.05
+    - 0.1
+    - 0.6
+    - 1.0
+    - 0.5
+  past_payout:
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.0
+    - 0.0
+    - 0.05
+    - 0.3
+    - 0.5
+    - 1.0
+
+# Параметры генерации расходов на кибербезопасность
+security_spend:
+  base_share:
+    finance: 0.03
+    retail: 0.02
+    manufacturing: 0.015
+    healthcare: 0.025
+    it_telecom: 0.035
+    other: 0.01
+  noise_sigma: 0.5
+
+# Коэффициенты для генерации целевой переменной Y0
+target_coefficients:
+  intercept: 0.5
+  beta_revenue: 0.4
+  beta_intangible: 0.1
+  beta_employees: 0.1
+  beta_online_share: 0.2
+  beta_security_spend: -0.05
+  beta_servers: 0.15
+  beta_cloud_share: 0.05
+  beta_critical_apps: 0.1
+  beta_iot_ot: 0.1
+  beta_has_policy: -0.1
+  beta_pentest: 0.05
+  beta_has_soc: -0.15
+  beta_training: -0.05
+  beta_has_irp: -0.1
+  # Отраслевые коэффициенты
+  industry_finance: 0.3
+  industry_retail: 0.1
+  industry_manufacturing: 0.0
+  industry_healthcare: 0.25
+  industry_it_telecom: 0.15
+  # Другие признаки
+  beta_personal_data: 0.15
+  beta_incidents_3y: 0.25
+  beta_past_loss: 0.3
+  beta_past_payout: 0.2
+  beta_has_insurance: -0.05
+  beta_network_seg: -0.1
+  beta_has_eol: 0.3
+  beta_downtime_hour_loss: 0.15
+  beta_mtd: 0.1
+  # Взаимодействия (усиливают эффекты)
+  beta_interaction_eol_servers: 0.1
+  beta_interaction_online_revenue: 0.05
+  beta_interaction_downtime_mtd: 0.15
+  beta_interaction_seg_servers: -0.05
+
+# Шум для целевой переменной
+noise_std: 0.3
+
+# Доля компаний с нулевым ущербом
+zero_loss_prob: 0.15
