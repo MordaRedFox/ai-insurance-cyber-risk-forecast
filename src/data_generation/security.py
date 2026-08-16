@@ -30,5 +30,6 @@ class SecuritySpendGenerator(BaseGenerator):
         noise = self.rng.lognormal(
             mean=0, sigma=noise_sigma, size=self.num_samples)
         security_spend = revenue * base_share * noise
-        security_spend = np.maximum(security_spend, 0)
+        security_spend = np.clip(security_spend, 0, 1e9)
+        security_spend = np.nan_to_num(security_spend, nan=0.0)
         return security_spend

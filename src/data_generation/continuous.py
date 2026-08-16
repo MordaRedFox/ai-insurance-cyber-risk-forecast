@@ -59,6 +59,8 @@ class ContinuousFeatureGenerator(BaseGenerator):
             mean=means, cov=cov_matrix, seed=self.config['seed'])
         log_values = mvn.rvs(size=self.num_samples)
         values = np.exp(log_values)
+        values = np.clip(values, 0, 1e9)
+        values = np.nan_to_num(values, nan=0.0)
         df_cont = pd.DataFrame(values, columns=self.FEATURE_NAMES)
         # Маскирование нулями для указанных признаков
         zero_probs = self.config.get('zero_probabilities', {})

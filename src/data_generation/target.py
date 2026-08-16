@@ -75,6 +75,7 @@ class TargetGenerator(BaseGenerator):
         X['beta_interaction_seg_servers'] = df[
             'has_network_segmentation'] * df['servers_log']
         X = X.astype(np.float64)
+        X = X.replace([np.inf, -np.inf], np.nan).fillna(0.0)
         # Список коэффициентов в правильном порядке
         coef_names = [
             'intercept', 'beta_revenue', 'beta_intangible', 'beta_employees',

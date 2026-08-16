@@ -111,6 +111,8 @@ class DataGenerator:
         log_vals = self.rng.normal(
             loc=means, scale=stds, size=(self.num_samples, 2))
         vals = np.exp(log_vals)
+        vals = np.clip(vals, 0, 1e9)
+        vals = np.nan_to_num(vals, nan=0.0)
         return pd.DataFrame(vals, columns=names)
 
     def _rename_columns(self, df: pd.DataFrame) -> pd.DataFrame:
