@@ -1,0 +1,15 @@
+# Конфигурация архитектуры нейросети
+
+model:
+  input_dim: null
+  hidden_dims: [256, 128, 64]
+  dropout: 0.3
+  activation: 'relu'
+  use_batch_norm: true
+  head_dropout: 0.2
+
+loss_weights:
+  t1: 1.0
+  t2: 1.0
+  t3: 1.0
+  t4: 1.0
