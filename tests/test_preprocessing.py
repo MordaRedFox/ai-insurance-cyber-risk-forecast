@@ -89,12 +89,16 @@ class TestDataPreprocessorIntegration:
             assert col in df_processed.columns, f"Колонка {col} отсутствует"
         df_loaded = load_dataframe(output_path)
         pd.testing.assert_frame_equal(df_processed, df_loaded)
-        scaler_params = load_pickle(scaler_path)
-        assert isinstance(scaler_params, dict)
-        assert 'scaler' in scaler_params
-        assert isinstance(scaler_params['scaler'], StandardScaler)
-        assert 'feature_columns' in scaler_params
-        assert isinstance(scaler_params['feature_columns'], list)
+        preprocessor_params = load_pickle(scaler_path)
+        assert isinstance(preprocessor_params, dict)
+        assert 'scaler' in preprocessor_params
+        assert isinstance(preprocessor_params['scaler'], dict)
+        assert 'scaler' in preprocessor_params['scaler']
+        assert isinstance(
+            preprocessor_params['scaler']['scaler'], StandardScaler)
+        assert 'feature_columns' in preprocessor_params['scaler']
+        assert 'encoder' in preprocessor_params
+        assert 'categories' in preprocessor_params
 
     def test_engineered_features(self, preprocessor: DataPreprocessor,
                                  raw_data_path: Path) -> None:

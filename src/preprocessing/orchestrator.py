@@ -62,9 +62,13 @@ class DataPreprocessor:
         if save_scaler:
             scaler_path = scaler_path or Path(
                 output_path).with_suffix('_scaler.pkl')
-            scaler_params = self.scaler.get_scaler_params()
-            save_pickle(scaler_params, scaler_path)
-            print(f"Скалер сохранен в {scaler_path}")
+            preprocessor_params = {
+                'scaler': self.scaler.get_scaler_params(),
+                'encoder': self.encoder.encoder,
+                'categories': self.encoder.categories
+            }
+            save_pickle(preprocessor_params, scaler_path)
+            print(f"Параметры препроцессора сохранены в {scaler_path}")
         return df
 
     def load_scaler(self, scaler_path: Union[str, Path]) -> None:
