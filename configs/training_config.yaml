@@ -1,0 +1,17 @@
+# Конфигурация обучения
+
+training:
+  batch_size: 256
+  num_epochs: 100
+  learning_rate: 0.0003
+  weight_decay: 1e-4
+  scheduler_patience: 10
+  scheduler_factor: 0.5
+  early_stopping_patience: 20
+  train_val_split: 0.8
+  random_state: 42
+
+logging:
+  log_interval: 10
+  save_dir: 'models/checkpoints/'
+  tensorboard: true
