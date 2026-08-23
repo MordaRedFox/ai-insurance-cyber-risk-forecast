@@ -57,6 +57,11 @@ class DataPreprocessor:
         print("Признаки масштабированы")
         df = self.target_builder.build(df)
         print("Целевые переменные созданы")
+        target_cols = self.target_builder.get_target_columns()
+        y0_col = 'Фактический совокупный ущерб за последние 12 месяцев (млн руб.)'
+        exclude_cols = target_cols + [y0_col]
+        full_feature_columns = [
+            col for col in df.columns if col not in exclude_cols]
         save_dataframe(df, output_path)
         print(f"Обработанные данные сохранены в {output_path}")
         if save_scaler:
@@ -65,7 +70,8 @@ class DataPreprocessor:
             preprocessor_params = {
                 'scaler': self.scaler.get_scaler_params(),
                 'encoder': self.encoder.encoder,
-                'categories': self.encoder.categories
+                'categories': self.encoder.categories,
+                'full_feature_columns': full_feature_columns
             }
             save_pickle(preprocessor_params, scaler_path)
             print(f"Параметры препроцессора сохранены в {scaler_path}")
