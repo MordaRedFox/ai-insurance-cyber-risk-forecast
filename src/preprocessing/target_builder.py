@@ -8,11 +8,10 @@ import numpy as np
 
 class TargetBuilder:
     """
-    Создает целевые переменные T1-T4 на основе Y0:
+    Создает целевые переменные T1-T3 на основе Y0:
         - T1: бинарная метка (1 если Y0 > 0)
         - T2: условный ущерб (логарифм Y0 для Y0 > 0, NaN для остальных)
         - T3: безусловный ущерб (логарифм Y0)
-        - T4: VaR 90% (90-й процентиль)
     """
 
     def __init__(self, quantile: float = 0.90):
@@ -25,12 +24,12 @@ class TargetBuilder:
 
     def build(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Добавляет колонки T1-T4 в DataFrame
+        Добавляет колонки T1-T3 в DataFrame
         Args:
             df: DataFrame с колонкой 'Фактический совокупный ущерб за
                 последние 12 месяцев (млн руб.)'
         Returns:
-            DataFrame с добавленными колонками T1, T2, T3, T4
+            DataFrame с добавленными колонками T1, T2, T3
         """
         y_col = 'Фактический совокупный ущерб за последние 12 месяцев (млн руб.)'
         df = df.copy()
@@ -38,14 +37,12 @@ class TargetBuilder:
         df['T2'] = np.log1p(df[y_col])
         df.loc[df[y_col] == 0, 'T2'] = np.nan
         df['T3'] = np.log1p(df[y_col])
-        var_90 = df[y_col].quantile(self.quantile)
-        df['T4'] = var_90
         return df
 
     def get_target_columns(self):
         """
         Возвращает имена целевых колонок
         Returns:
-            Список строк ['T1', 'T2', 'T3', 'T4']
+            Список строк ['T1', 'T2', 'T3']
         """
-        return ['T1', 'T2', 'T3', 'T4']
+        return ['T1', 'T2', 'T3']

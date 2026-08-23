@@ -1,5 +1,8 @@
 """
-Класс Trainer для управления обучением модели
+Класс Trainer для управления обучением модели с тремя головами:
+- T1: вероятность инцидента (бинарная классификация)
+- T2: условный ущерб при инциденте (регрессия, только для y > 0)
+- T3: безусловный ущерб (регрессия, для всех)
 """
 
 import torch
@@ -9,14 +12,13 @@ import logging
 from torch.utils.data import DataLoader
 from pathlib import Path
 from typing import Dict, Any
-from src.train.losses import pinball_loss
 
 logger = logging.getLogger(__name__)
 
 
 class Trainer:
     """
-    Управляет процессом обучения модели
+    Управляет процессом обучения модели с тремя целевыми переменными
     """
 
     def __init__(self, model: nn.Module, train_loader: DataLoader,
@@ -60,28 +62,29 @@ class Trainer:
         """
         Обучает модель на одной эпохе
         Returns:
-            Словарь с усредненными потерями: total_loss, t1, t2, t3, t4
+            Словарь с усредненными потерями:
+                - total_loss: взвешенная сумма потерь по головам
+                - t1: средняя BCE-потеря для T1
+                - t2: средняя MSE-потеря для T2 (только по инцидентам)
+                - t3: средняя MSE-потеря для T3
         """
         self.model.train()
         total_loss = 0.0
         total_t1 = 0.0
         total_t2 = 0.0
         total_t3 = 0.0
-        total_t4 = 0.0
         num_batches = 0
         for batch in self.train_loader:
-            X, y1, y2, y3, y4 = batch
+            X, y1, y2, y3 = batch
             X = X.to(self.device)
             y1 = y1.to(self.device).float().view(-1, 1)
             y2 = y2.to(self.device).float().view(-1, 1)
             y3 = y3.to(self.device).float().view(-1, 1)
-            y4 = y4.to(self.device).float().view(-1, 1)
             self.optimizer.zero_grad()
             outputs = self.model(X)
             t1_logits = outputs['t1']
             t2_pred = outputs['t2']
             t3_pred = outputs['t3']
-            t4_pred = outputs['t4']
             loss_t1 = self.criterion_t1(t1_logits, y1)
             mask_t2 = (y1 > 0.5).squeeze()
             if mask_t2.sum() > 0:
@@ -89,12 +92,10 @@ class Trainer:
             else:
                 loss_t2 = torch.tensor(0.0, device=self.device)
             loss_t3 = self.criterion_t3(t3_pred, y3)
-            loss_t4 = pinball_loss(t4_pred, y4, tau=0.9)
             w1 = self.config.get('loss_weights', {}).get('t1', 1.0)
             w2 = self.config.get('loss_weights', {}).get('t2', 1.0)
             w3 = self.config.get('loss_weights', {}).get('t3', 1.0)
-            w4 = self.config.get('loss_weights', {}).get('t4', 1.0)
-            loss = w1 * loss_t1 + w2 * loss_t2 + w3 * loss_t3 + w4 * loss_t4
+            loss = w1 * loss_t1 + w2 * loss_t2 + w3 * loss_t3
             loss.backward()
             torch.nn.utils.clip_grad_norm_(
                 self.model.parameters(), max_norm=1.0)
@@ -103,52 +104,44 @@ class Trainer:
             total_t1 += loss_t1.item()
             total_t2 += loss_t2.item()
             total_t3 += loss_t3.item()
-            total_t4 += loss_t4.item()
             num_batches += 1
         avg_loss = total_loss / num_batches
         avg_t1 = total_t1 / num_batches
         avg_t2 = total_t2 / num_batches
         avg_t3 = total_t3 / num_batches
-        avg_t4 = total_t4 / num_batches
         logger.info(
-            f"Train Loss: {avg_loss:.4f} (t1: {avg_t1:.4f}, t2: {avg_t2:.4f}, t3: {avg_t3:.4f}, t4: {avg_t4:.4f})"
-        )
+            f"Train Loss: {avg_loss:.4f} "
+            f"(t1: {avg_t1:.4f}, t2: {avg_t2:.4f}, t3: {avg_t3:.4f})")
         return {
-            'total_loss': avg_loss,
-            't1': avg_t1,
-            't2': avg_t2,
-            't3': avg_t3,
-            't4': avg_t4
-        }
+            'total_loss': avg_loss, 't1': avg_t1, 't2': avg_t2, 't3': avg_t3}
 
     def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
         """
         Оценивает модель на валидационном или тестовом DataLoader
         Args:
-            data_loader: DataLoader, содержащий батчи с данными
+            data_loader: DataLoader с данными (X, y1, y2, y3)
         Returns:
-            Словарь с ключами: total_loss, t1, t2, t3, t4 (усредненные по батчам)
+            Словарь с усредненными потерями:
+                - total_loss: взвешенная сумма
+                - t1, t2, t3: средние потери по каждой голове
         """
         self.model.eval()
         total_loss = 0.0
         total_t1 = 0.0
         total_t2 = 0.0
         total_t3 = 0.0
-        total_t4 = 0.0
         num_batches = 0
         with torch.no_grad():
             for batch in data_loader:
-                X, y1, y2, y3, y4 = batch
+                X, y1, y2, y3 = batch
                 X = X.to(self.device)
                 y1 = y1.to(self.device).float().view(-1, 1)
                 y2 = y2.to(self.device).float().view(-1, 1)
                 y3 = y3.to(self.device).float().view(-1, 1)
-                y4 = y4.to(self.device).float().view(-1, 1)
                 outputs = self.model(X)
                 t1_logits = outputs['t1']
                 t2_pred = outputs['t2']
                 t3_pred = outputs['t3']
-                t4_pred = outputs['t4']
                 loss_t1 = self.criterion_t1(t1_logits, y1)
                 mask_t2 = (y1 > 0.5).squeeze()
                 if mask_t2.sum() > 0:
@@ -156,44 +149,36 @@ class Trainer:
                 else:
                     loss_t2 = torch.tensor(0.0, device=self.device)
                 loss_t3 = self.criterion_t3(t3_pred, y3)
-                loss_t4 = pinball_loss(t4_pred, y4, tau=0.9)
                 w1 = self.config.get('loss_weights', {}).get('t1', 1.0)
                 w2 = self.config.get('loss_weights', {}).get('t2', 1.0)
                 w3 = self.config.get('loss_weights', {}).get('t3', 1.0)
-                w4 = self.config.get('loss_weights', {}).get('t4', 1.0)
-                loss = w1 * loss_t1 + w2 * loss_t2 + w3 * loss_t3 + w4 * loss_t4
+                loss = w1 * loss_t1 + w2 * loss_t2 + w3 * loss_t3
                 total_loss += loss.item()
                 total_t1 += loss_t1.item()
                 total_t2 += loss_t2.item()
                 total_t3 += loss_t3.item()
-                total_t4 += loss_t4.item()
                 num_batches += 1
         avg_loss = total_loss / num_batches
         avg_t1 = total_t1 / num_batches
         avg_t2 = total_t2 / num_batches
         avg_t3 = total_t3 / num_batches
-        avg_t4 = total_t4 / num_batches
         logger.info(
-            f"Val Loss: {avg_loss:.4f} (t1: {avg_t1:.4f}, t2: {avg_t2:.4f}, t3: {avg_t3:.4f}, t4: {avg_t4:.4f})"
+            f"Val Loss: {avg_loss:.4f} "
+            f"(t1: {avg_t1:.4f}, t2: {avg_t2:.4f}, t3: {avg_t3:.4f})"
         )
         return {
-            'total_loss': avg_loss,
-            't1': avg_t1,
-            't2': avg_t2,
-            't3': avg_t3,
-            't4': avg_t4
-        }
+            'total_loss': avg_loss, 't1': avg_t1, 't2': avg_t2, 't3': avg_t3}
 
     def train(self, num_epochs: int, save_dir: Path,
               model_name: str = 'best_model.pth') -> nn.Module:
         """
-        Запускает полный цикл обучения
+        Запускает полный цикл обучения с ранней остановкой
         Args:
             num_epochs: максимальное число эпох
-            save_dir: директория для сохранения модели
-            model_name: имя файла для лучшей модели
+            save_dir: директория для сохранения лучшей модели
+            model_name: имя файла для сохранения
         Returns:
-            Обученная модель
+            Обученная модель (загружена лучшая версия)
         """
         save_dir = Path(save_dir)
         save_dir.mkdir(parents=True, exist_ok=True)
@@ -205,7 +190,8 @@ class Trainer:
             self.train_losses.append(train_loss)
             self.val_losses.append(val_loss)
             logger.info(
-                f"Epoch {epoch}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}"
+                f"Epoch {epoch}/{num_epochs} - Train Loss: {train_loss:.4f}, "
+                f"Val Loss: {val_loss:.4f}"
             )
             self.scheduler.step(val_loss)
             if val_loss < self.best_val_loss:

@@ -2,7 +2,6 @@
 Модульные тесты для пакета обучения (src/train)
 
 Проверяют:
-- Корректность функции потерь pinball_loss
 - Подготовку DataLoader'ов (размеры, типы)
 - Инициализацию Trainer и выполнение одного шага обучения
 - Методы evaluate и сохранение модели
@@ -15,7 +14,7 @@ sys.path.append('.')
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from src.train import Trainer, prepare_dataloaders, pinball_loss
+from src.train import Trainer, prepare_dataloaders
 from src.model import CyberRiskModel
 
 
@@ -23,7 +22,7 @@ BATCH_SIZE: int = 8
 INPUT_DIM: int = 10
 NUM_SAMPLES: int = 100
 FEATURE_COLS = [f'feature_{i}' for i in range(INPUT_DIM)]
-TARGET_COLS = ['T1', 'T2', 'T3', 'T4']
+TARGET_COLS = ['T1', 'T2', 'T3']
 SEED: int = 42
 TOLERANCE: float = 1e-6
 
@@ -33,19 +32,17 @@ def random_dataframe() -> pd.DataFrame:
     """
     Создает случайный DataFrame с признаками и целями
     Returns:
-        DataFrame с колонками feature_* и T1..T4
+        DataFrame с колонками feature_* и T1..T3
     """
     np.random.seed(SEED)
     X = np.random.randn(NUM_SAMPLES, INPUT_DIM)
     y1 = np.random.randint(0, 2, (NUM_SAMPLES, 1)).astype(np.float32)
     y2 = np.random.randn(NUM_SAMPLES, 1).astype(np.float32)
     y3 = np.random.randn(NUM_SAMPLES, 1).astype(np.float32)
-    y4 = np.random.randn(NUM_SAMPLES, 1).astype(np.float32)
     data = {f'feature_{i}': X[:, i] for i in range(INPUT_DIM)}
     data['T1'] = y1.flatten()
     data['T2'] = y2.flatten()
     data['T3'] = y3.flatten()
-    data['T4'] = y4.flatten()
     return pd.DataFrame(data)
 
 @pytest.fixture
@@ -72,67 +69,8 @@ def train_config() -> dict:
         'scheduler_patience': 2,
         'scheduler_factor': 0.5,
         'early_stopping_patience': 3,
-        'loss_weights': {'t1': 1.0, 't2': 1.0, 't3': 1.0, 't4': 1.0}
+        'loss_weights': {'t1': 1.0, 't2': 1.0, 't3': 1.0}
     }
-
-
-class TestPinballLoss:
-    """
-    Тесты для функции pinball_loss
-    """
-
-    def test_shape(self) -> None:
-        """
-        Проверяет, что функция возвращает скаляр
-        """
-        pred = torch.randn(10, 1)
-        target = torch.randn(10, 1)
-        loss = pinball_loss(pred, target, tau=0.9)
-        assert loss.ndim == 0
-
-    def test_zero_error(self) -> None:
-        """
-        Проверяет, что при нулевой ошибке потеря равна 0
-        """
-        target = torch.ones(5, 1)
-        pred = target.clone()
-        loss = pinball_loss(pred, target, tau=0.9)
-        assert torch.isclose(
-            loss, torch.tensor(0.0, dtype=torch.float32), atol=TOLERANCE)
-
-    def test_positive_error(self) -> None:
-        """
-        Проверяет, что при ошибке (занижение/завышение) потеря > 0
-        """
-        target = torch.ones(5, 1)
-        pred_low = torch.zeros(5, 1)
-        loss_low = pinball_loss(pred_low, target, tau=0.9)
-        assert loss_low > 0
-        target_zero = torch.zeros(5, 1)
-        pred_high = torch.ones(5, 1)
-        loss_high = pinball_loss(pred_high, target_zero, tau=0.9)
-        assert loss_high > 0
-
-    def test_asymmetry(self) -> None:
-        """
-        Проверяет асимметрию: при tau=0.9 занижение наказывается сильнее
-        """
-        target = torch.zeros(1, 1)
-        pred_low = torch.tensor([[-1.0]])
-        pred_high = torch.tensor([[1.0]])
-        loss_low = pinball_loss(pred_low, target, tau=0.9)
-        loss_high = pinball_loss(pred_high, target, tau=0.9)
-        assert loss_low > loss_high
-
-    def test_tau_range(self) -> None:
-        """
-        Проверяет, что функция работает для разных tau (0.1, 0.5, 0.9)
-        """
-        pred = torch.randn(10, 1)
-        target = torch.randn(10, 1)
-        for tau in [0.1, 0.5, 0.9]:
-            loss = pinball_loss(pred, target, tau=tau)
-            assert not torch.isnan(loss)
 
 
 class TestPrepareDataloaders:
@@ -181,12 +119,11 @@ class TestPrepareDataloaders:
             target_cols=TARGET_COLS, batch_size=batch_size,
             val_split=0.2, random_state=SEED)
         for batch in train_loader:
-            X, y1, y2, y3, y4 = batch
+            X, y1, y2, y3 = batch
             assert X.size(0) <= batch_size
             assert y1.size(0) == X.size(0)
             assert y2.size(0) == X.size(0)
             assert y3.size(0) == X.size(0)
-            assert y4.size(0) == X.size(0)
             break
 
     def test_feature_cols_presence(

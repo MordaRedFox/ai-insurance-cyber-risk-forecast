@@ -18,7 +18,7 @@ def prepare_dataloaders(df: pd.DataFrame, feature_cols: List[str],
     Args:
         df: DataFrame с признаками и целями
         feature_cols: список имен колонок-признаков
-        target_cols: список имен целевых колонок (T1, T2, T3, T4)
+        target_cols: список имен целевых колонок (T1, T2, T3)
         batch_size: размер батча
         val_split: доля валидационной выборки
         random_state: seed для разделения
@@ -38,9 +38,9 @@ def prepare_dataloaders(df: pd.DataFrame, feature_cols: List[str],
     X_val = torch.tensor(X_val)
     y_val = torch.tensor(y_val)
     train_dataset = TensorDataset(
-        X_train, y_train[:, 0], y_train[:, 1], y_train[:, 2], y_train[:, 3])
+        X_train, y_train[:, 0], y_train[:, 1], y_train[:, 2])
     val_dataset = TensorDataset(
-        X_val, y_val[:, 0], y_val[:, 1], y_val[:, 2], y_val[:, 3])
+        X_val, y_val[:, 0], y_val[:, 1], y_val[:, 2])
     train_loader = DataLoader(
         train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     val_loader = DataLoader(

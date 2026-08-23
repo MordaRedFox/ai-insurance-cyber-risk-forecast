@@ -6,7 +6,7 @@
 - Добавление инженерных признаков (it_density, sec_effectiveness, downtime_cap)
 - One-Hot кодирование отрасли
 - Масштабирование числовых признаков
-- Создание целевых переменных T1-T4
+- Создание целевых переменных T1-T3
 - Сохранение и загрузка scaler
 """
 
@@ -83,7 +83,7 @@ class TestDataPreprocessorIntegration:
             'it_density', 'sec_effectiveness', 'downtime_cap',
             'industry_finance', 'industry_healthcare', 'industry_it_telecom',
             'industry_manufacturing', 'industry_other', 'industry_retail',
-            'T1', 'T2', 'T3', 'T4'
+            'T1', 'T2', 'T3'
         ]
         for col in expected_cols:
             assert col in df_processed.columns, f"Колонка {col} отсутствует"
@@ -187,7 +187,7 @@ class TestDataPreprocessorIntegration:
     def test_target_creation(self, preprocessor: DataPreprocessor,
                              raw_data_path: Path) -> None:
         """
-        Проверяет корректность создания целевых переменных T1-T4
+        Проверяет корректность создания целевых переменных T1-T3
         Args:
             preprocessor: экземпляр препроцессора
             raw_data_path: путь к сырым данным
@@ -197,7 +197,6 @@ class TestDataPreprocessorIntegration:
         assert 'T1' in df_with_targets.columns
         assert 'T2' in df_with_targets.columns
         assert 'T3' in df_with_targets.columns
-        assert 'T4' in df_with_targets.columns
         y_true = df_raw[
             'Фактический совокупный ущерб за последние 12 месяцев (млн руб.)']
         expected_t1 = (y_true > 0).astype(float)
@@ -211,9 +210,6 @@ class TestDataPreprocessorIntegration:
         expected_t3 = np.log1p(y_true)
         np.testing.assert_allclose(
             df_with_targets['T3'].values, expected_t3.values, rtol=1e-6)
-        expected_t4 = y_true.quantile(0.90)
-        assert (df_with_targets['T4'] == expected_t4).all(), \
-            f"T4 должна быть константой {expected_t4:.4f}"
 
     def test_save_and_load_scaler(self, preprocessor: DataPreprocessor,
                                   raw_data_path: Path,

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     data_path = Path('data/processed/processed_companies.csv')
     df = load_dataframe(data_path)
     logger.info(f"Загружено {len(df)} записей")
-    target_cols = ['T1', 'T2', 'T3', 'T4']
+    target_cols = ['T1', 'T2', 'T3']
     exclude_cols = target_cols + [
         'Фактический совокупный ущерб за последние 12 месяцев (млн руб.)']
     feature_cols = [col for col in df.columns if col not in exclude_cols]
@@ -75,5 +75,7 @@ if __name__ == '__main__':
     model_name = 'best_model.pth'
     trainer.train(
         num_epochs=num_epochs, save_dir=save_dir, model_name=model_name)
-    logger.info(f"Средние значения целей: T1={df['T1'].mean():.2f}, T2={df['T2'].mean():.2f}, T3={df['T3'].mean():.2f}, T4={df['T4'].mean():.2f}")
+    logger.info(
+        f"Средние значения целей: T1={df['T1'].mean():.2f}, "
+        f"T2={df['T2'].mean():.2f}, T3={df['T3'].mean():.2f}")
     logger.info("Обучение завершено успешно")

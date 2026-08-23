@@ -1,11 +1,10 @@
 """
 Многоголовая нейросеть для прогнозирования киберрисков
 
-Модель имеет общий бэкбон (Shared Backbone) и 4 головы:
+Модель имеет общий бэкбон (Shared Backbone) и 3 головы:
 - T1: вероятность инцидента (бинарная классификация)
 - T2: условный ущерб при инциденте (регрессия, только для y > 0)
 - T3: безусловный ущерб (регрессия, для всех)
-- T4: VaR 90% (квантильная регрессия)
 """
 
 import torch
@@ -54,7 +53,6 @@ class CyberRiskModel(nn.Module):
         self.head_t1 = nn.Linear(prev_dim, 1)
         self.head_t2 = nn.Linear(prev_dim, 1)
         self.head_t3 = nn.Linear(prev_dim, 1)
-        self.head_t4 = nn.Linear(prev_dim, 1)
 
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         """
@@ -66,15 +64,14 @@ class CyberRiskModel(nn.Module):
                 - 't1': логиты вероятности инцидента
                 - 't2': предсказанный логарифм условного ущерба
                 - 't3': предсказанный логарифм безусловного ущерба
-                - 't4': предсказанный VaR
         """
         features = self.backbone(x)
         features = self.head_dropout(features)
-        t1 = self.head_t1(features)
-        t2 = self.head_t2(features)
-        t3 = self.head_t3(features)
-        t4 = self.head_t4(features)
-        return {'t1': t1, 't2': t2, 't3': t3, 't4': t4}
+        return {
+            't1': self.head_t1(features),
+            't2': self.head_t2(features),
+            't3': self.head_t3(features)
+        }
 
     def predict_proba(self, x: torch.Tensor) -> torch.Tensor:
         """

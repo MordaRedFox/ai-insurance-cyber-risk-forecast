@@ -3,13 +3,12 @@
 model:
   input_dim: null
   hidden_dims: [512, 256, 128, 64]
-  dropout: 0.4
+  dropout: 0.5
   activation: 'relu'
   use_batch_norm: true
-  head_dropout: 0.3
+  head_dropout: 0.4
 
 loss_weights:
   t1: 5.0
   t2: 1.0
   t3: 0.5
-  t4: 0.0

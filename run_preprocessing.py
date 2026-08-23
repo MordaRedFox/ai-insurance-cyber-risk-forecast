@@ -23,4 +23,3 @@ if __name__ == "__main__":
         df['T1'].mean()*100:.1f}%)")
     logger.info(f"T2 (средний лог-ущерб): {df['T2'].mean():.2f}")
     logger.info(f"T3 (средний лог-ущерб): {df['T3'].mean():.2f}")
-    logger.info(f"T4 (VaR 90%): {df['T4'].iloc[0]:.2f}")
