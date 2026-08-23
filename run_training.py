@@ -7,15 +7,23 @@ sys.path.append('.')
 import logging
 import torch
 from pathlib import Path
+from datetime import datetime
 from src.train import Trainer, prepare_dataloaders
 from src.model import CyberRiskModel
 from src.utils import load_config, set_seed, load_dataframe
 
 
 if __name__ == '__main__':
+    log_dir = Path('logs')
+    log_dir.mkdir(exist_ok=True)
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_file = log_dir / f"training_{timestamp}.log"
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.StreamHandler(),
+                  logging.FileHandler(log_file, encoding='utf-8')]
+    )
     logger = logging.getLogger(__name__)
     model_config_path = 'configs/model_config.yaml'
     training_config_path = 'configs/training_config.yaml'
