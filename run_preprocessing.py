@@ -4,13 +4,12 @@
 
 import sys
 sys.path.append('.')
-from src.preprocessing import DataPreprocessor
-from src.utils import setup_logging
+from src import DataPreprocessor, setup_logging
 
 logger = setup_logging(log_dir='logs', name='preprocessing')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     preprocessor = DataPreprocessor()
     input_path = 'data/raw/synthetic_companies.csv'
     output_path = 'data/processed/processed_companies.csv'

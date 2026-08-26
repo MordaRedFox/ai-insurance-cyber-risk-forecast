@@ -4,11 +4,10 @@
 
 import sys
 sys.path.append('.')
-from src.data_generation import DataGenerator
-from src.utils import setup_logging
+from src import DataGenerator, setup_logging
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logger = setup_logging(log_dir='logs', name='generation')
     config_path = 'configs/generation_config.yaml'
     generator = DataGenerator(config_path)

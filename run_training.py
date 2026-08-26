@@ -8,9 +8,10 @@ import logging
 import torch
 from pathlib import Path
 from datetime import datetime
-from src.train import Trainer, prepare_dataloaders
-from src.model import CyberRiskModel
-from src.utils import load_config, set_seed, load_dataframe
+from src import (
+    Trainer, prepare_dataloaders, CyberRiskModel,
+    load_config, set_seed, load_dataframe
+)
 
 
 if __name__ == '__main__':

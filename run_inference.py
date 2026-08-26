@@ -5,8 +5,7 @@
 import sys
 sys.path.append('.')
 import pandas as pd
-from src.infer import Inference
-from src.utils import load_dataframe
+from src import Inference, load_dataframe
 
 
 if __name__ == '__main__':
