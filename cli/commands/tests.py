@@ -78,6 +78,7 @@ class RunTestModuleCommand(BaseTestCommand):
                 return
             if choice in self.QUIT_KEYS:
                 Console.info("Возврат в главное меню.")
+                Console.mark_handled()
                 return
             module = self.registry.find(choice)
             if module is None:

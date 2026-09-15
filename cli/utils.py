@@ -22,6 +22,8 @@ class Console:
     MAGENTA = '\033[95m'
     CYAN = '\033[96m'
 
+    _handled: bool = False
+
     @classmethod
     def title(cls: Type['Console'], text: str) -> None:
         """
@@ -75,6 +77,25 @@ class Console:
             text: приглушенный текст
         """
         print(f"{cls.DIM}{text}{cls.RESET}")
+
+    @classmethod
+    def mark_handled(cls: Type['Console']) -> None:
+        """
+        Помечает, что команда завершилась без необходимости паузы
+        Используется командами, которые вернули управление в главное меню
+        """
+        cls._handled = True
+
+    @classmethod
+    def consume_handled(cls: Type['Console']) -> bool:
+        """
+        Возвращает и сбрасывает флаг handled
+        Returns:
+            True, если команда помечена как handled
+        """
+        value = cls._handled
+        cls._handled = False
+        return value
 
 
 class ScriptRunner:
