@@ -19,4 +19,4 @@ class TrainingCommand(BaseCommand):
         """
         Console.title("Обучение модели")
         Console.warning("Это может занять продолжительное время.")
-        self.run_script('run_training.py')
+        self.run_script('run_scripts/run_training.py')

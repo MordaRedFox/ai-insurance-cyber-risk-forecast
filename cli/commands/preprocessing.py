@@ -18,4 +18,4 @@ class PreprocessingCommand(BaseCommand):
         Запускает препроцессинг сырых данных
         """
         Console.title("Препроцессинг данных")
-        self.run_script('run_preprocessing.py')
+        self.run_script('run_scripts/run_preprocessing.py')

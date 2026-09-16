@@ -23,7 +23,7 @@ class VisualizeCommand(BaseCommand):
         Запускает генерацию графиков по данным инференса
         """
         Console.title("Генерация графиков")
-        self.run_script('run_visualize.py')
+        self.run_script('run_scripts/run_visualize.py')
 
 
 class OpenVisualizationsCommand(BaseCommand):

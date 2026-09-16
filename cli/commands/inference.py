@@ -18,4 +18,4 @@ class InferenceCommand(BaseCommand):
         Запускает инференс модели
         """
         Console.title("Инференс модели")
-        self.run_script('run_inference.py')
+        self.run_script('run_scripts/run_inference.py')

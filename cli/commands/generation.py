@@ -18,4 +18,4 @@ class GenerationCommand(BaseCommand):
         Запускает генерацию синтетических данных
         """
         Console.title("Генерация синтетических данных")
-        self.run_script('run_generation.py')
+        self.run_script('run_scripts/run_generation.py')
