@@ -15,6 +15,9 @@ class DamagePlot(BasePlot):
     Парная диаграмма условного и безусловного ущерба
     """
 
+    Y_TOP_MARGIN = 2.5
+    LABEL_OFFSET = 1.15
+
     def render(self) -> Figure:
         """
         Создает парную диаграмму условного и безусловного ущерба
@@ -53,11 +56,15 @@ class DamagePlot(BasePlot):
             FuncFormatter(lambda v, _: self.format_money(v, short=True)))
         ax.grid(axis='y', linestyle='--', alpha=0.5)
         ax.set_axisbelow(True)
+        max_val = max(df['damage_t2'].max(), df['damage_t3'].max())
+        min_val = min(df['damage_t2'].min(), df['damage_t3'].min())
+        ax.set_ylim(min_val * 0.7, max_val * self.Y_TOP_MARGIN)
         ax.legend(loc='upper right', frameon=False)
         for bars, values in [(bars1, df['damage_t2']), (bars2, df['damage_t3'])]:
             for bar, val in zip(bars, values):
                 ax.text(
-                    bar.get_x() + bar.get_width() / 2, val * 1.15,
+                    bar.get_x() + bar.get_width() / 2,
+                    val * self.LABEL_OFFSET,
                     self.format_money(val, short=True),
                     ha='center', va='bottom',
                     fontsize=Theme.FONTS['value'] - 1,
