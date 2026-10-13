@@ -8,7 +8,7 @@ from cli.services import FileFinder, FolderOpener
 from cli.utils import Console
 
 
-OUTPUT_DIR = Path('data') / 'visualization_output'
+OUTPUT_DIR = Path('data') / 'visualization_output/graphs'
 
 
 class VisualizeCommand(BaseCommand):

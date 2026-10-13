@@ -9,6 +9,6 @@ from visualization import Dashboard
 
 if __name__ == '__main__':
     print("Генерация графиков визуализации...")
-    dashboard = Dashboard(output_dir='data/visualization_output')
+    dashboard = Dashboard(output_dir='data/visualization_output/graphs')
     saved = dashboard.render_all()
     print(f"\nГотово. Сохранено {len(saved)} файлов")
