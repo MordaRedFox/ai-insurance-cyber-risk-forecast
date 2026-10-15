@@ -11,7 +11,7 @@ from cli.commands.visualization import (
     VisualizeCommand, OpenVisualizationsCommand)
 from cli.commands.presentation import (
     PresentationCommand, OpenPresentationCommand)
-from cli.commands.tests import RunAllTestsCommand, RunTestModuleCommand
+from cli.commands.tests import TestsCommand
 from cli.menu import MenuItem
 
 
@@ -46,10 +46,7 @@ def build_menu_items() -> List[MenuItem]:
         MenuItem('8', OpenPresentationCommand.name,
                  OpenPresentationCommand().execute,
                  OpenPresentationCommand.description),
-        MenuItem('9', RunAllTestsCommand.name,
-                 RunAllTestsCommand().execute,
-                 RunAllTestsCommand.description),
-        MenuItem('10', RunTestModuleCommand.name,
-                  RunTestModuleCommand().execute,
-                  RunTestModuleCommand.description),
+        MenuItem('9', TestsCommand.name,
+                 TestsCommand().execute,
+                 TestsCommand.description),
     ]

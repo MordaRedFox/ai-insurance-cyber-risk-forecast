@@ -1,5 +1,5 @@
 """
-Команды запуска тестов
+Команда запуска тестов: все сразу или конкретный модуль
 """
 
 from typing import Optional
@@ -11,76 +11,39 @@ from cli.utils import Console
 SEPARATOR_WIDTH = 52
 
 
-class BaseTestCommand(BaseCommand):
+class TestsCommand(BaseCommand):
     """
-    Общий предок для команд запуска тестов
-    Содержит логику, специфичную только для тестовых команд
+    Запуск тестов в подменю: весь пайплайн или отдельный модуль
     """
+    name = 'Запуск тестов'
+    description = 'Запустить все тесты или конкретный модуль'
+    QUIT_KEYS = {'q', 'quit', 'exit', '0'}
+    ALL_TESTS_KEY = '1'
+    FIRST_MODULE_INDEX = 2
 
     def __init__(self):
         """
-        Инициализирует сервис запуска тестов
+        Инициализирует сервис запуска тестов и реестр модулей
         """
         self.runner = TestRunner()
-
-    @staticmethod
-    def print_test_result(code: int) -> None:
-        """
-        Печатает результат запуска тестов в консоль
-        Args:
-            code: код возврата pytest
-        """
-        if code == 0:
-            Console.success("Все тесты прошли.")
-        else:
-            Console.error(f"Тесты завершились с кодом {code}.")
-
-
-class RunAllTestsCommand(BaseTestCommand):
-    """
-    Запускает все тесты
-    """
-    name = 'Все тесты'
-    description = 'Запустить полный набор pytest'
-
-    def execute(self) -> None:
-        """
-        Запускает все тесты сразу
-        """
-        Console.title("Запуск всех тестов")
-        code = self.runner.run_all()
-        self.print_test_result(code)
-
-
-class RunTestModuleCommand(BaseTestCommand):
-    """
-    Запускает один тестовый модуль по выбору
-    """
-    name = 'Один тестовый модуль'
-    description = 'Выбрать конкретный модуль тестов'
-    QUIT_KEYS = {'q', 'quit', 'exit', '0'}
-
-    def __init__(self):
-        """
-        Инициализирует реестр модулей
-        """
-        super().__init__()
         self.registry = TestRegistry()
+        self._key_to_module: dict = {}
 
     def execute(self) -> None:
         """
-        Показывает меню модулей и запускает выбранный
+        Показывает подменю тестов и запускает выбранный сценарий
         """
         while True:
             self._print_menu()
             choice = self._read_choice()
-            if choice is None:
-                return
-            if choice in self.QUIT_KEYS:
+            if choice is None or choice in self.QUIT_KEYS:
                 Console.info("Возврат в главное меню.")
                 Console.mark_handled()
                 return
-            module = self.registry.find(choice)
+            if choice == self.ALL_TESTS_KEY:
+                self._run_all()
+                return
+            module = self._key_to_module.get(choice)
             if module is None:
                 Console.error("Некорректный выбор. Попробуйте снова.")
                 continue
@@ -89,12 +52,18 @@ class RunTestModuleCommand(BaseTestCommand):
 
     def _print_menu(self) -> None:
         """
-        Отображает список тестовых модулей в стиле главного меню
+        Отображает подменю: «Все тесты», затем конкретные модули тестов
         """
-        Console.title("Выбор тестового модуля")
+        self._key_to_module = {}
+        Console.title("Запуск тестов")
         print("─" * SEPARATOR_WIDTH)
-        for module in self.registry.all():
-            print(f"  {Console.GREEN}{module.key}{Console.RESET}. "
+        print(f"  {Console.GREEN}{self.ALL_TESTS_KEY}{Console.RESET}. "
+              f"{Console.BOLD}Все тесты{Console.RESET}")
+        for index, module in enumerate(
+                self.registry.all(), start=self.FIRST_MODULE_INDEX):
+            key = str(index)
+            self._key_to_module[key] = module
+            print(f"  {Console.GREEN}{key}{Console.RESET}. "
                   f"{Console.BOLD}{module.label}{Console.RESET}")
         print("─" * SEPARATOR_WIDTH)
         Console.muted("  q. Возврат в главное меню")
@@ -113,12 +82,32 @@ class RunTestModuleCommand(BaseTestCommand):
             print()
             return None
 
+    def _run_all(self) -> None:
+        """
+        Запускает весь пайплайн тестов
+        """
+        Console.info("Запуск всех тестов...")
+        code = self.runner.run_all()
+        self._print_result(code)
+
     def _run_module(self, module: TestModule) -> None:
         """
-        Запускает выбранный модуль
+        Запускает выбранный тестовый модуль
         Args:
-            module: тестовый модуль
+            module: тестовый модуль из реестра
         """
         Console.info(f"Запуск: {module.label}")
         code = self.runner.run_module(module.path)
-        self.print_test_result(code)
+        self._print_result(code)
+
+    @staticmethod
+    def _print_result(code: int) -> None:
+        """
+        Печатает результат запуска тестов
+        Args:
+            code: код возврата pytest
+        """
+        if code == 0:
+            Console.success("Все тесты прошли.")
+        else:
+            Console.error(f"Тесты завершились с кодом {code}.")
