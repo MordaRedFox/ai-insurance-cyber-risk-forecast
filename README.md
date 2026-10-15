@@ -61,10 +61,12 @@
             </p>
             <div style="text-align: left; margin-left: 20px;">
                 <ul style="text-align: left; padding-left: 20px;">
-                    <li>🎮 Удобное меню с 8 командами</li>
+                    <li>🎮 Удобное меню с 9 командами</li>
+                    <li>🗃️ Генерация и препроцессинг данных</li>
+                    <li>🤖 Обучение и инференс модели</li>
                     <li>📊 Генерация графиков для презентации (4 вида)</li>
+                    <li>🎨 Генерация визуализаций для презентации</li>
                     <li>🧪 Запуск тестов pytest из интерфейса</li>
-                    <li>🔧 Проверка конфигураций проекта</li>
                     <li>🌐 Кроссплатформенность (Windows/Linux/macOS)</li>
                 </ul>
             </div>
@@ -339,7 +341,7 @@
 
 </div>
 
-### 🎯 Целевые переменные
+### 🎯 Целевые переменные и головы
 
 <div align="center">
 
@@ -402,6 +404,7 @@ ai-insurance-cyber-risk-forecast/
 │   │   ├── generation.py
 │   │   ├── inference.py
 │   │   ├── preprocessing.py
+│   │   ├── presentation.py
 │   │   ├── tests.py
 │   │   ├── training.py
 │   │   └── visualization.py
@@ -434,10 +437,15 @@ ai-insurance-cyber-risk-forecast/
 │   │   └── synthetic_companies.csv
 │   │
 │   └── visualization_output/
-│       ├── 01_probability.png
-│       ├── 02_damage.png
-│       ├── 03_risk_map.png
-│       └── 04_risk_factors.png
+│       ├── graphs
+│       │   ├── 01_probability.png
+│       │   ├── 02_damage.png
+│       │   ├── 03_risk_map.png
+│       │   └── 04_risk_factors.png
+│       │
+│       └── presentation
+│           ├── nn_architecture.png
+│           └── nn_training.gif
 │
 ├── logs/
 │
@@ -451,6 +459,7 @@ ai-insurance-cyber-risk-forecast/
 │   ├── run_generation.py
 │   ├── run_inference.py
 │   ├── run_preprocessing.py
+│   ├── run_presentation.py
 │   ├── run_training.py
 │   └── run_visualize.py
 │
@@ -501,13 +510,18 @@ ai-insurance-cyber-risk-forecast/
 │   └── test_train.py
 │
 ├──visualization/
-│   └── plots/
+│   ├── plots/
 │   │   ├── __init__.py
 │   │   ├── base.py                     # Абстрактный базовый класс
 │   │   ├── damage.py                   # График ущерба
 │   │   ├── probability.py              # График T1
 │   │   ├── risk_factors.py             # Факторы риска
 │   │   └── scatter.py                  # Карта рисков
+│   │
+│   ├── presentation/
+│   │   ├── __init__.py
+│   │   ├── nn_architectural.py         # Рисунок архитектуры нейросети
+│   │   └── nn_training.py              # Анимация обучения нейросети
 │   │
 │   ├── __init__.py
 │   ├── dashboard.py                    # Оркестратор
@@ -521,6 +535,18 @@ ai-insurance-cyber-risk-forecast/
 ├── README.md
 └── requirements.txt
 ```
+
+---
+
+## 🏛️ Архитектура многоголовой нейросети
+
+![Архитектура многоголовой нейросети](data/visualization_output/presentation/nn_architecture.png)
+
+---
+
+## 🎓 Обучение многоголовой нейросети
+
+![Обучение многоголовой нейросети](data/visualization_output/presentation/nn_training.gif)
 
 ---
 
@@ -555,6 +581,7 @@ python run_scripts/run_preprocessing.py
 python run_scripts/run_training.py
 python run_scripts/run_inference.py
 python run_scripts/run_visualize.py
+python run_scripts/run_presentation.py
 ```
 
 ### 🧪 Запуск тестов

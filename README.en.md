@@ -61,10 +61,12 @@ The project was carried out as part of research work for the economic conference
             </p>
             <div style="text-align: left; margin-left: 20px;">
                 <ul style="text-align: left; padding-left: 20px;">
-                    <li>🎮 Convenient menu with 8 commands</li>
+                    <li>🎮 Convenient menu with 9 commands</li>
+                    <li>🗃️ Data generation and preprocessing</li>
+                    <li>🤖 Model training and inference</li>
                     <li>📊 Generation of plots for presentation (4 types)</li>
+                    <li>🎨 Generating visualizations for a presentation</li>
                     <li>🧪 Running pytest tests from the interface</li>
-                    <li>🔧 Checking project configurations</li>
                     <li>🌐 Cross-platform (Windows/Linux/macOS)</li>
                 </ul>
             </div>
@@ -339,7 +341,7 @@ The project was carried out as part of research work for the economic conference
 
 </div>
 
-### 🎯 Target variables
+### 🎯 Target variables and heads
 
 <div align="center">
 
@@ -402,6 +404,7 @@ ai-insurance-cyber-risk-forecast/
 │   │   ├── generation.py
 │   │   ├── inference.py
 │   │   ├── preprocessing.py
+│   │   ├── presentation.py
 │   │   ├── tests.py
 │   │   ├── training.py
 │   │   └── visualization.py
@@ -434,10 +437,15 @@ ai-insurance-cyber-risk-forecast/
 │   │   └── synthetic_companies.csv
 │   │
 │   └── visualization_output/
-│       ├── 01_probability.png
-│       ├── 02_damage.png
-│       ├── 03_risk_map.png
-│       └── 04_risk_factors.png
+│       ├── graphs
+│       │   ├── 01_probability.png
+│       │   ├── 02_damage.png
+│       │   ├── 03_risk_map.png
+│       │   └── 04_risk_factors.png
+│       │
+│       └── presentation
+│           ├── nn_architecture.png
+│           └── nn_training.gif
 │
 ├── logs/
 │
@@ -451,6 +459,7 @@ ai-insurance-cyber-risk-forecast/
 │   ├── run_generation.py
 │   ├── run_inference.py
 │   ├── run_preprocessing.py
+│   ├── run_presentation.py
 │   ├── run_training.py
 │   └── run_visualize.py
 │
@@ -501,13 +510,18 @@ ai-insurance-cyber-risk-forecast/
 │   └── test_train.py
 │
 ├──visualization/
-│   └── plots/
+│   ├── plots/
 │   │   ├── __init__.py
 │   │   ├── base.py                     # Abstract base class
 │   │   ├── damage.py                   # Damage plot
 │   │   ├── probability.py              # T1 plot
 │   │   ├── risk_factors.py             # Risk factors
 │   │   └── scatter.py                  # Risk map
+│   │
+│   ├── presentation/
+│   │   ├── __init__.py
+│   │   ├── nn_architectural.py         # Neural network architecture diagram
+│   │   └── nn_training.py              # Neural network training animation
 │   │
 │   ├── __init__.py
 │   ├── dashboard.py                    # Orchestrator
@@ -521,6 +535,18 @@ ai-insurance-cyber-risk-forecast/
 ├── README.md
 └── requirements.txt
 ```
+
+---
+
+## 🏛️ Multi-headed neural network architecture
+
+![Multi-headed neural network architecture](data/visualization_output/presentation/nn_architecture.png)
+
+---
+
+## 🎓 Training a multi-headed neural network
+
+![Training a multi-headed neural network](data/visualization_output/presentation/nn_training.gif)
 
 ---
 
@@ -555,6 +581,7 @@ python run_scripts/run_preprocessing.py
 python run_scripts/run_training.py
 python run_scripts/run_inference.py
 python run_scripts/run_visualize.py
+python run_scripts/run_presentation.py
 ```
 
 ### 🧪 Running tests
