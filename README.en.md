@@ -526,6 +526,7 @@ ai-insurance-cyber-risk-forecast/
 │   ├── __init__.py
 │   ├── dashboard.py                    # Orchestrator
 │   ├── data_provider.py                # Singleton for loading predictions
+│   ├── labels.py                       # Translation of company names into Russian
 │   └── theme.py                        # Colors, fonts, style
 │
 ├── .gitignore

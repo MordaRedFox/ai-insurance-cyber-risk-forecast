@@ -219,7 +219,7 @@ def create_training_animation(output: str | Path = DEFAULT_OUTPUT, fps: int = FP
             phase_text.set_text('')
         # Forward: все ребра, включая W1
         elif t < P_FWD_END:
-            phase_text.set_text('Forward pass →')
+            phase_text.set_text('Прямой проход →')
             phase_text.set_color('#C73E1D')
             p = (t - P_FWD_START) / (P_FWD_END - P_FWD_START)
             progress = p * N_STAGES
@@ -234,7 +234,7 @@ def create_training_animation(output: str | Path = DEFAULT_OUTPUT, fps: int = FP
                         fwd_colors[i] = (r, g, b, inten)
         # Loss: пульсируют ребра, ведущие к головам
         elif t < P_LOSS_END:
-            phase_text.set_text('Loss calculation')
+            phase_text.set_text('Расчет потерь')
             phase_text.set_color('#C73E1D')
             p = (t - P_LOSS_START) / (P_LOSS_END - P_LOSS_START)
             pulse = np.sin(p * np.pi)
@@ -244,7 +244,7 @@ def create_training_animation(output: str | Path = DEFAULT_OUTPUT, fps: int = FP
                     fwd_colors[i] = (r, g, b, pulse)
         # Backward: тоже все ребра, включая W1
         elif t < P_BWD_END:
-            phase_text.set_text('← Backward pass')
+            phase_text.set_text('← Обратный проход')
             phase_text.set_color('#5B8FF9')
             p = (t - P_BWD_START) / (P_BWD_END - P_BWD_START)
             progress = p * N_STAGES

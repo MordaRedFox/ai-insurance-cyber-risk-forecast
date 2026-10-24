@@ -9,6 +9,7 @@ from typing import Tuple, List
 from matplotlib.figure import Figure
 from visualization.plots.base import BasePlot
 from visualization.theme import Theme
+from visualization.labels import industry_label
 
 
 class RiskFactorsPlot(BasePlot):
@@ -59,7 +60,7 @@ class RiskFactorsPlot(BasePlot):
         ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
         ax.grid(axis='x', linestyle='--', alpha=0.5)
         ax.set_axisbelow(True)
-        industry = company['Отрасль'].capitalize()
+        industry = industry_label(company['Отрасль'])
         revenue = company['Годовая выручка (млн руб.)']
         self.subtitle = (
             f'Компания с максимальным риском: '

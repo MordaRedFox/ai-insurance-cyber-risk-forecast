@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from visualization.plots.base import BasePlot
 from visualization.theme import Theme
+from visualization.labels import industry_label
 
 
 class RiskReturnPlot(BasePlot):
@@ -47,7 +48,7 @@ class RiskReturnPlot(BasePlot):
                 linewidth=2, zorder=3,
             )
         for _, row in df.iterrows():
-            ind = row['Отрасль'].capitalize()
+            ind = industry_label(row['Отрасль'])
             revenue = row['Годовая выручка (млн руб.)']
             ax.annotate(
                 f"{ind} · {revenue:.0f}",
@@ -88,7 +89,7 @@ class RiskReturnPlot(BasePlot):
                     markerfacecolor=color,
                     markeredgecolor=Theme.COLORS['white'],
                     markeredgewidth=1.2,
-                    label=industry.capitalize(),
+                    label=industry_label(industry),
                 )
             )
         ax.legend(

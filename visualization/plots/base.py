@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from visualization.theme import Theme
+from visualization.labels import industry_label
 
 
 class BasePlot(ABC):
@@ -79,12 +80,12 @@ class BasePlot(ABC):
         """
         Форматирует метку компании для оси
         Args:
-            industry: название отрасли
+            industry: код отрасли
             revenue: годовая выручка в млн руб
         Returns:
-            Строка вида "Finance\\n350 млн ₽"
+            Строка вида "Финансы\\n350 млн ₽"
         """
-        name = industry.capitalize()
+        name = industry_label(industry)
         if revenue >= 1000:
             rev = f'{revenue / 1000:.1f} млрд ₽'
         else:
